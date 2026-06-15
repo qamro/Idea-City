@@ -1,0 +1,29 @@
+.toast {
+  position: absolute;
+  top: 78px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--glass-2);
+  border: 1px solid var(--border-2);
+  border-radius: var(--r-pill);
+  padding: 9px 20px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  pointer-events: none;
+  z-index: 12;
+}
+
+.accent {
+  color: var(--amber);
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.msg {
+  color: var(--cream-60);
+  font-size: 12px;
+}

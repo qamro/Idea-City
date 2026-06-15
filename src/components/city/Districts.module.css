@@ -1,0 +1,20 @@
+.zone {
+  position: absolute;
+  border-radius: 22px;
+  border: 1px solid;
+  pointer-events: none;
+  z-index: 1;
+  animation: districtPulse 4s ease-in-out infinite;
+  transition: all 0.6s ease;
+}
+
+.label {
+  position: absolute;
+  top: 12px;
+  left: 16px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}

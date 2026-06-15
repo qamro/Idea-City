@@ -1,0 +1,75 @@
+.viewport {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  cursor: grab;
+  overflow: hidden;
+}
+
+.world {
+  position: absolute;
+  width: 5000px;
+  height: 4000px;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+
+.grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 249, 240, 0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 249, 240, 0.018) 1px, transparent 1px);
+  background-size: 90px 90px;
+  pointer-events: none;
+  transition: opacity 1.2s ease;
+}
+
+.gridDay {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+}
+
+.roadH {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 249, 240, 0.055) 15%,
+    rgba(255, 249, 240, 0.055) 85%,
+    transparent 100%
+  );
+  pointer-events: none;
+  transition: opacity 1.2s ease;
+}
+
+.roadV {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(255, 249, 240, 0.055) 15%,
+    rgba(255, 249, 240, 0.055) 85%,
+    transparent 100%
+  );
+  pointer-events: none;
+  transition: opacity 1.2s ease;
+}
+
+.roadDay {
+  opacity: 0.38;
+}
+
+.particleLayer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+}

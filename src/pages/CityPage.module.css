@@ -1,0 +1,107 @@
+.page {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* ── Sky backgrounds ── */
+.sky {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  transition: background 1.6s ease;
+}
+
+.skyNight {
+  background: linear-gradient(
+    180deg,
+    #07090F 0%,
+    #0A0C1A 35%,
+    #0F1428 65%,
+    #141828 100%
+  );
+}
+
+.skyDay {
+  background: linear-gradient(
+    180deg,
+    #0D2347 0%,
+    #1B3A6E 25%,
+    #2D5FA0 55%,
+    #5B8FCC 80%,
+    #8FB8E0 100%
+  );
+}
+
+/* ── Ground plane ── */
+.ground {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 28%;
+  background: linear-gradient(180deg, transparent 0%, rgba(9, 11, 20, 0.85) 100%);
+  z-index: 0;
+  pointer-events: none;
+  transition: background 1.6s ease;
+}
+
+.groundDay {
+  background: linear-gradient(180deg, transparent 0%, rgba(15, 24, 48, 0.6) 100%);
+}
+
+/* ── UI layer ── */
+.uiLayer {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.uiLayer > * {
+  pointer-events: auto;
+}
+
+/* ── Loading screen ── */
+.loadScreen {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  z-index: 50;
+}
+
+.loadBrand {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  color: var(--amber);
+  animation: fadeIn 0.6s ease forwards;
+}
+
+.loadDots {
+  display: flex;
+  gap: 10px;
+}
+
+.loadDots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--amber);
+  animation: dotPulse 1.2s ease-in-out infinite;
+}
+
+.loadDots span:nth-child(2) { animation-delay: 0.2s; }
+.loadDots span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes dotPulse {
+  0%, 100% { opacity: 0.25; transform: scale(0.8); }
+  50%       { opacity: 1;    transform: scale(1.2); }
+}
