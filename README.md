@@ -10,7 +10,7 @@ Every idea becomes a building. Every project becomes a district. Every achieveme
 
 Idea City is not a todo app. Not a dashboard. Not a productivity tool.
 
-It is a **personal civilization** — an infinite canvas where your ideas, skills, goals, dreams, and achievements take physical form as buildings in a city only you can build.
+It is a **personal civilization**, an infinite canvas where your ideas, skills, goals, dreams, and achievements take physical form as buildings in a city only you can build.
 
 ---
 
