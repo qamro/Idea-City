@@ -16,7 +16,7 @@ It is a **personal civilization**, an infinite canvas where your ideas, skills, 
 
 <div align="center">
  
-🌐 **Live Demo:** (https://landing-page-autoreply.vercel.app)  
+**🌐 Live Demo: (https://idea-city.vercel.app)** 
 
 </div>
 
