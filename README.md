@@ -249,6 +249,8 @@ Developed by:
 
 **Mohamed Qamar Eddine Bakhouche**
 
+---
+
 ## License
 
 MIT — Build your civilization.
