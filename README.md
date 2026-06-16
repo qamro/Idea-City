@@ -253,4 +253,12 @@ Developed by:
 
 ## License
 
-MIT — Build your civilization.
+**MIT** 
+
+---
+
+<div align="center">
+
+**Build your civilization.**
+
+</div>
