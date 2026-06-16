@@ -5,14 +5,14 @@ import { useCamera } from '../hooks/useCamera'
 import { useToast } from '../hooks/useToast'
 import { signOut } from '../services/auth'
 
-import StarField      from '../components/city/StarField'
-import CityCanvas     from '../components/city/CityCanvas'
-import TopBar         from '../components/ui/TopBar'
+import StarField        from '../components/city/StarField'
+import CityCanvas       from '../components/city/CityCanvas'
+import TopBar           from '../components/ui/TopBar'
 import { ZoomControls, AddButton } from '../components/ui/Controls'
-import BuildingDetail from '../components/ui/BuildingDetail'
+import BuildingDetail   from '../components/ui/BuildingDetail'
 import AddBuildingModal from '../components/ui/AddBuildingModal'
-import Onboarding     from '../components/onboarding/Onboarding'
-import Toast          from '../components/ui/Toast'
+import Onboarding       from '../components/onboarding/Onboarding'
+import Toast            from '../components/ui/Toast'
 
 import styles from './CityPage.module.css'
 
@@ -26,19 +26,28 @@ export default function CityPage() {
   const camera = useCamera()
   const { toast, showToast } = useToast()
 
-  const [dayMode,      setDayMode]      = useState(() => localStorage.getItem('ic_day') === '1')
-  const [showModal,    setShowModal]    = useState(false)
-  const [selectedBld,  setSelectedBld]  = useState(null)
-  const [showOnboard,  setShowOnboard]  = useState(false)
-  const containerRef   = useRef(null)
+  const [dayMode,     setDayMode]     = useState(() => localStorage.getItem('ic_day') === '1')
+  const [showModal,   setShowModal]   = useState(false)
+  const [selectedBld, setSelectedBld] = useState(null)
+  const [showOnboard, setShowOnboard] = useState(false)
+  const [showSignOut, setShowSignOut] = useState(false)
+  const containerRef  = useRef(null)
 
-  // ── Determine if onboarding is needed ─────
+  // Show "sign out" button after 4 seconds of loading
+  useEffect(() => {
+    if (cityLoading) {
+      const t = setTimeout(() => setShowSignOut(true), 4000)
+      return () => clearTimeout(t)
+    } else {
+      setShowSignOut(false)
+    }
+  }, [cityLoading])
+
   useEffect(() => {
     if (!cityLoading && !city) setShowOnboard(true)
     if (city) setShowOnboard(false)
   }, [city, cityLoading])
 
-  // ── Init camera once city loads ────────────
   useEffect(() => {
     if (city && containerRef.current) {
       const { offsetWidth: w, offsetHeight: h } = containerRef.current
@@ -46,24 +55,20 @@ export default function CityPage() {
     }
   }, [city])
 
-  // ── After onboarding: zoom into first building ──
   function handleOnboardComplete() {
     setShowOnboard(false)
-    // Small delay to let building render, then cinematic zoom
     setTimeout(() => {
       const first = buildings[0]
       if (first) {
         camera.smoothTo(
           window.innerWidth  / 2 - (first.positionX + 35) * 1.3,
           window.innerHeight / 2 - (first.positionY + 60) * 1.3,
-          1.3,
-          1600,
+          1.3, 1600,
         )
       }
     }, 500)
   }
 
-  // ── Day/Night ──────────────────────────────
   function toggleDay() {
     setDayMode((d) => {
       const next = !d
@@ -73,25 +78,20 @@ export default function CityPage() {
     })
   }
 
-  // ── Add building ────────────────────────────
   async function handleAdd(title, category) {
     await addBuildingToCity(title, category)
     showToast(title, '✦ founded')
   }
 
-  // ── Upgrade ────────────────────────────────
   async function handleUpgrade(buildingId) {
     await upgradeBuildingLevel(buildingId)
     const b = buildings.find((x) => x.id === buildingId)
     if (b) showToast(b.title, '↑ leveled up')
-    // Refresh selected
-    setSelectedBld((prev) => prev
-      ? { ...prev, level: Math.min((prev.level || 1) + 1, 5) }
-      : prev
+    setSelectedBld((prev) =>
+      prev ? { ...prev, level: Math.min((prev.level || 1) + 1, 5) } : prev
     )
   }
 
-  // ── Remove ──────────────────────────────────
   async function handleRemove(buildingId) {
     const b = buildings.find((x) => x.id === buildingId)
     await removeBuildingFromCity(buildingId)
@@ -99,13 +99,11 @@ export default function CityPage() {
     if (b) showToast(b.title, 'demolished')
   }
 
-  // ── Select building + pan to it ─────────────
   function handleBuildingClick(building) {
     setSelectedBld(building)
     camera.panToWorld(building.positionX, building.positionY)
   }
 
-  // ── Keyboard shortcuts ─────────────────────
   useEffect(() => {
     function onKey(e) {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return
@@ -113,19 +111,18 @@ export default function CityPage() {
       if (e.key === 'Escape') { setShowModal(false); setSelectedBld(null) }
       if (e.key === 't' || e.key === 'T') toggleDay()
       if (e.key === '+' || e.key === '=') camera.zoomIn()
-      if (e.key === '-')                   camera.zoomOut()
-      if (e.key === '0')                   camera.goHome()
+      if (e.key === '-') camera.zoomOut()
+      if (e.key === '0') camera.goHome()
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [camera, toggleDay])
+  }, [camera])
 
-  // ── Sign out ────────────────────────────────
   async function handleSignOut() {
     await signOut()
   }
 
-  // ── Loading splash ─────────────────────────
+  // ── Loading screen with escape hatch ────────
   if (cityLoading) {
     return (
       <div className={styles.loadScreen}>
@@ -133,6 +130,29 @@ export default function CityPage() {
         <div className={styles.loadDots}>
           <span /><span /><span />
         </div>
+        {showSignOut && (
+          <div style={{ marginTop: 40, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+            <p style={{ color: 'rgba(255,249,240,0.4)', fontSize: 13 }}>
+              Taking too long to connect…
+            </p>
+            <button
+              onClick={handleSignOut}
+              style={{
+                background: 'rgba(255,107,107,0.15)',
+                border: '1px solid rgba(255,107,107,0.3)',
+                borderRadius: 50,
+                padding: '10px 24px',
+                color: '#FF6B6B',
+                fontSize: 13,
+                fontWeight: 600,
+                cursor: 'pointer',
+                fontFamily: 'Inter, sans-serif',
+              }}
+            >
+              Sign Out & Try Again
+            </button>
+          </div>
+        )}
       </div>
     )
   }
@@ -142,16 +162,10 @@ export default function CityPage() {
       ref={containerRef}
       className={`${styles.page} ${dayMode ? styles.day : styles.night}`}
     >
-      {/* Sky */}
       <div className={`${styles.sky} ${dayMode ? styles.skyDay : styles.skyNight}`} />
-
-      {/* Stars (night only) */}
       <StarField visible={!dayMode} />
-
-      {/* Ground gradient */}
       <div className={`${styles.ground} ${dayMode ? styles.groundDay : ''}`} />
 
-      {/* City canvas — pan/zoom world */}
       {city && (
         <CityCanvas
           camera={camera}
@@ -162,12 +176,8 @@ export default function CityPage() {
         />
       )}
 
-      {/* Onboarding overlay */}
-      {showOnboard && (
-        <Onboarding onComplete={handleOnboardComplete} />
-      )}
+      {showOnboard && <Onboarding onComplete={handleOnboardComplete} />}
 
-      {/* UI overlay — always on top */}
       {city && (
         <div className={styles.uiLayer}>
           <TopBar
@@ -176,16 +186,12 @@ export default function CityPage() {
             onSignOut={handleSignOut}
             userName={user?.displayName || user?.email || ''}
           />
-
           <ZoomControls
             onZoomIn={() => camera.zoomIn()}
             onZoomOut={() => camera.zoomOut()}
             onHome={() => camera.goHome()}
           />
-
           <AddButton onClick={() => setShowModal(true)} />
-
-          {/* Building detail panel */}
           {selectedBld && (
             <BuildingDetail
               building={selectedBld}
@@ -194,13 +200,10 @@ export default function CityPage() {
               onRemove={handleRemove}
             />
           )}
-
-          {/* Toast */}
           <Toast toast={toast} />
         </div>
       )}
 
-      {/* Add building modal */}
       <AddBuildingModal
         open={showModal}
         onClose={() => setShowModal(false)}
