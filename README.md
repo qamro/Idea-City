@@ -14,6 +14,14 @@ It is a **personal civilization**, an infinite canvas where your ideas, skills, 
 
 ---
 
+<div align="center">
+ 
+🌐 **Live Demo:** (https://landing-page-autoreply.vercel.app)  
+
+</div>
+
+---
+
 ## Features
 
 - **8 Building Types** — Houses (ideas), Schools (skills), Factories (projects), Towers (goals), Pagodas (dreams), Libraries (learning), Monuments (achievements), Glass towers (business)
