@@ -239,7 +239,15 @@ cities/{cityId}
 | 50        | Metropolis of Mind  |
 | 100       | Legendary Skyline   |
 
+
 ---
+
+
+## 👨‍💻 Author
+
+Developed by:
+
+**Mohamed Qamar Eddine Bakhouche**
 
 ## License
 
