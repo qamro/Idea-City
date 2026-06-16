@@ -17,7 +17,7 @@ export function CityProvider({ children }) {
   const [buildings,     setBuildings]     = useState([])
   const [achievements,  setAchievements]  = useState([])
   const [cityLoading,   setCityLoading]   = useState(true)
-  const [spawnQueue,    setSpawnQueue]    = useState([])  // IDs of buildings to animate in
+  const [spawnQueue,    setSpawnQueue]    = useState([])
 
   const unsubBldRef  = useRef(null)
   const unsubAchvRef = useRef(null)
@@ -32,29 +32,30 @@ export function CityProvider({ children }) {
 
     ;(async () => {
       setCityLoading(true)
-      let existing = await getCityByOwner(user.uid)
+      try {
+        let existing = await getCityByOwner(user.uid)
 
-      if (!existing) {
-        // First time — city will be created during onboarding
+        if (!existing) {
+          if (mounted) setCityLoading(false)
+          return
+        }
+
+        if (mounted) setCity(existing)
+
+        unsubBldRef.current?.()
+        unsubBldRef.current = subscribeBuildings(existing.id, (blds) => {
+          if (mounted) setBuildings(blds)
+        })
+
+        unsubAchvRef.current?.()
+        unsubAchvRef.current = subscribeAchievements(existing.id, (achvs) => {
+          if (mounted) setAchievements(achvs)
+        })
+      } catch (e) {
+        console.error('CityContext bootstrap error:', e.message)
+      } finally {
         if (mounted) setCityLoading(false)
-        return
       }
-
-      if (mounted) setCity(existing)
-
-      // Subscribe to live buildings
-      unsubBldRef.current?.()
-      unsubBldRef.current = subscribeBuildings(existing.id, (blds) => {
-        if (mounted) setBuildings(blds)
-      })
-
-      // Subscribe to achievements
-      unsubAchvRef.current?.()
-      unsubAchvRef.current = subscribeAchievements(existing.id, (achvs) => {
-        if (mounted) setAchievements(achvs)
-      })
-
-      if (mounted) setCityLoading(false)
     })()
 
     return () => {
@@ -69,7 +70,7 @@ export function CityProvider({ children }) {
     if (!city?.id || !buildings.length) return
     const pop = calcPopulation(buildings)
     if (pop !== city.population) {
-      updateCity(city.id, { population: pop })
+      updateCity(city.id, { population: pop }).catch(() => {})
       setCity((c) => c ? { ...c, population: pop } : c)
     }
   }, [buildings, city?.id])
@@ -77,79 +78,95 @@ export function CityProvider({ children }) {
   // ── Found city (first-time flow) ────────────
   const foundCity = useCallback(async (cityName) => {
     if (!user) return null
-    const cityId = await createCity(user.uid, cityName)
-    const newCity = { id: cityId, ownerId: user.uid, cityName, population: 0, level: 1 }
-    setCity(newCity)
+    try {
+      const cityId = await createCity(user.uid, cityName)
+      const newCity = { id: cityId, ownerId: user.uid, cityName, population: 0, level: 1 }
+      setCity(newCity)
 
-    // Subscribe
-    unsubBldRef.current?.()
-    unsubBldRef.current = subscribeBuildings(cityId, setBuildings)
-    unsubAchvRef.current?.()
-    unsubAchvRef.current = subscribeAchievements(cityId, setAchievements)
+      unsubBldRef.current?.()
+      unsubBldRef.current = subscribeBuildings(cityId, setBuildings)
+      unsubAchvRef.current?.()
+      unsubAchvRef.current = subscribeAchievements(cityId, setAchievements)
 
-    return cityId
+      return cityId
+    } catch (e) {
+      console.error('foundCity error:', e.message)
+      return null
+    }
   }, [user])
 
   // ── Add building ────────────────────────────
   const addBuildingToCity = useCallback(async (title, category) => {
     if (!city?.id) return null
-    const pos = findBuildingPosition(category, buildings)
-    const data = {
-      cityId:    city.id,
-      title,
-      category,
-      level:     1,
-      positionX: pos.positionX,
-      positionY: pos.positionY,
+    try {
+      const pos = findBuildingPosition(category, buildings)
+      const data = {
+        cityId:    city.id,
+        title,
+        category,
+        level:     1,
+        positionX: pos.positionX,
+        positionY: pos.positionY,
+      }
+      const id = await addBuilding(city.id, data)
+      setSpawnQueue((q) => [...q, id])
+
+      upsertDistrict(city.id, category, {
+        name: CATEGORIES[category]?.districtName || category,
+        category,
+      }).catch(() => {})
+
+      checkMilestones(buildings.length + 1)
+      return id
+    } catch (e) {
+      console.error('addBuilding error:', e.message)
+      return null
     }
-    const id = await addBuilding(city.id, data)
-
-    // Queue spawn animation
-    setSpawnQueue((q) => [...q, id])
-
-    // Sync district
-    await upsertDistrict(city.id, category, {
-      name: CATEGORIES[category]?.districtName || category,
-      category,
-    })
-
-    // Check achievements
-    await checkMilestones(buildings.length + 1)
-
-    return id
   }, [city, buildings])
 
   // ── Upgrade building ────────────────────────
   const upgradeBuildingLevel = useCallback(async (buildingId) => {
     if (!city?.id) return
-    const b = buildings.find((x) => x.id === buildingId)
-    if (!b || (b.level || 1) >= 5) return
-    const newLevel = (b.level || 1) + 1
-    await updateBuilding(city.id, buildingId, { level: newLevel })
-    setSpawnQueue((q) => [...q, buildingId])
+    try {
+      const b = buildings.find((x) => x.id === buildingId)
+      if (!b || (b.level || 1) >= 5) return
+      const newLevel = (b.level || 1) + 1
+      await updateBuilding(city.id, buildingId, { level: newLevel })
+      setSpawnQueue((q) => [...q, buildingId])
+    } catch (e) {
+      console.error('upgradeBuilding error:', e.message)
+    }
   }, [city, buildings])
 
   // ── Remove building ─────────────────────────
   const removeBuildingFromCity = useCallback(async (buildingId) => {
     if (!city?.id) return
-    await removeBuilding(city.id, buildingId)
+    try {
+      await removeBuilding(city.id, buildingId)
+    } catch (e) {
+      console.error('removeBuilding error:', e.message)
+    }
   }, [city])
 
   // ── Achievement milestones ──────────────────
   const checkMilestones = useCallback(async (count) => {
     if (!city?.id) return
-    const milestones = {
-      1:   { title: 'First Light',        description: 'Founded your civilization' },
-      5:   { title: 'Village',            description: 'Five ideas standing tall' },
-      10:  { title: 'Town of Thought',    description: 'A decade of buildings' },
-      25:  { title: 'City of Ideas',      description: 'Twenty-five structures!' },
-      50:  { title: 'Metropolis of Mind', description: 'Fifty buildings and counting' },
-      100: { title: 'Legendary Skyline',  description: 'One hundred ideas — extraordinary' },
-    }
-    if (milestones[count]) {
-      const { title, description } = milestones[count]
-      const already = achievements.some((a) => a.title === title)
-      if (!already) await unlockAchievement(city.id, title, description)
+    try {
+      const milestones = {
+        1:   { title: 'First Light',        description: 'Founded your civilization' },
+        5:   { title: 'Village',            description: 'Five ideas standing tall' },
+        10:  { title: 'Town of Thought',    description: 'A decade of buildings' },
+        25:  { title: 'City of Ideas',      description: 'Twenty-five structures!' },
+        50:  { title: 'Metropolis of Mind', description: 'Fifty buildings and counting' },
+        100: { title: 'Legendary Skyline',  description: 'One hundred ideas — extraordinary' },
+      }
+      if (milestones[count]) {
+        const { title, description } = milestones[count]
+        const already = achievements.some((a) => a.title === title)
+        if (!already) await unlockAchievement(city.id, title, description)
+      }
+    } catch (e) {
+      console.error('checkMilestones error:', e.message)
     }
   }, [city, achievements])
 

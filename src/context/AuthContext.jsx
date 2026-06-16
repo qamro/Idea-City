@@ -11,11 +11,17 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const unsub = onAuth(async (firebaseUser) => {
       if (firebaseUser) {
-        await ensureUser(firebaseUser)
+        try {
+          await ensureUser(firebaseUser)
+        } catch (e) {
+          // Firestore might be offline — still set the user so the app continues
+          console.warn('ensureUser failed (offline?):', e.message)
+        }
         setUser(firebaseUser)
       } else {
         setUser(null)
       }
+      // Always clear loading no matter what
       setLoading(false)
     })
     return unsub
