@@ -74,6 +74,8 @@ src/
 │       ├── BuildingDetail.jsx    # Slide-in panel for selected building
 │       ├── BuildingDetail.module.css
 │       ├── AddBuildingModal.jsx  # Create new building dialog
+│       ├── ProfileMenu.jsx
+│       ├── ProfileMenu.module.css
 │       ├── AddBuildingModal.module.css
 │       ├── Controls.jsx          # Zoom buttons + Add FAB
 │       ├── Controls.module.css
