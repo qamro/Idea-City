@@ -1,4 +1,4 @@
-# ✦ IDEA CITY
+I'm# ✦ IDEA CITY
 
 > *A civilization built from your mind.*
 
@@ -250,10 +250,6 @@ Developed by:
 **Mohamed Qamar Eddine Bakhouche**
 
 ---
-
-## License
-
-**MIT** 
 
 
 
