@@ -1,4 +1,4 @@
-I'm# ✦ IDEA CITY
+✦ IDEA CITY
 
 > *A civilization built from your mind.*
 
