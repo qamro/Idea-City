@@ -150,3 +150,13 @@
 .remove:hover {
   background: rgba(255, 107, 107, 0.18) !important;
 }
+
+/* ── Mobile ── */
+@media (max-width: 480px) {
+  .panel {
+    left: 12px;
+    right: 12px;
+    bottom: 90px;
+    width: auto;
+  }
+}

@@ -15,6 +15,7 @@
   white-space: nowrap;
   z-index: 10;
   pointer-events: auto;
+  max-width: calc(100vw - 24px);
 }
 
 .cityName {
@@ -90,39 +91,80 @@
   flex-shrink: 0;
 }
 
-.avatar {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: var(--amber);
-  color: #070910;
-  font-size: 12px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  border: none;
-  transition: opacity 0.2s;
-  flex-shrink: 0;
-}
-
-.avatar:hover {
-  opacity: 0.8;
-}
-
-@media (max-width: 600px) {
+/* ── Tablet ── */
+@media (max-width: 768px) {
   .bar {
-    padding: 8px 14px;
-    gap: 12px;
-    top: 12px;
+    gap: 14px;
+    padding: 8px 16px;
+    top: 14px;
   }
 
-  .stat:nth-child(n + 5) {
+  /* Hide districts stat on tablet */
+  .stat:nth-child(5),
+  .stat:nth-child(6) {
     display: none;
   }
 
+  /* Hide divider after hidden stats */
+  .divider:nth-child(6) {
+    display: none;
+  }
+}
+
+/* ── Mobile ── */
+@media (max-width: 480px) {
+  .bar {
+    top: 10px;
+    gap: 10px;
+    padding: 7px 12px;
+    border-radius: 20px;
+  }
+
   .cityName {
-    font-size: 11px;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    max-width: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Show only population stat on mobile */
+  .stat:nth-child(3) {
+    display: flex;
+  }
+
+  .stat:nth-child(5),
+  .stat:nth-child(6),
+  .stat:nth-child(7) {
+    display: none;
+  }
+
+  .divider:not(:first-of-type) {
+    display: none;
+  }
+
+  /* Hide all dividers except first */
+  .divider ~ .divider {
+    display: none;
+  }
+
+  .val {
+    font-size: 12px;
+  }
+
+  .label {
+    font-size: 10px;
+  }
+
+  /* Smaller day/night toggle on mobile */
+  .timeToggle {
+    width: 42px;
+    height: 22px;
+  }
+
+  .toggleBall {
+    width: 16px;
+    height: 16px;
+    font-size: 10px;
   }
 }

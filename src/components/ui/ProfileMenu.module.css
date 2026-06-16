@@ -310,3 +310,41 @@
 .signOutBtn:hover {
   background: rgba(255,107,107,0.08);
 }
+
+/* ── Mobile fixes ── */
+@media (max-width: 480px) {
+  .dropdown {
+    width: calc(100vw - 24px);
+    right: -8px;
+    border-radius: 16px;
+  }
+
+  .header {
+    padding: 16px;
+  }
+
+  .avatarLarge {
+    width: 44px;
+    height: 44px;
+  }
+
+  .avatarLargeInitial {
+    font-size: 18px;
+  }
+
+  .nameText {
+    font-size: 14px;
+  }
+
+  .section {
+    padding: 12px 16px;
+  }
+
+  .signOutBtn {
+    padding: 13px 16px;
+  }
+
+  .statVal {
+    font-size: 16px;
+  }
+}

@@ -25,11 +25,20 @@
   -webkit-backdrop-filter: blur(20px);
   transition: color 0.2s, background 0.2s;
   line-height: 1;
+  /* Better touch targets */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .zBtn:hover {
   color: var(--cream);
   background: var(--cream-12);
+}
+
+.zBtn:active {
+  background: var(--cream-12);
+  color: var(--cream);
+  transform: scale(0.93);
 }
 
 .addBtn {
@@ -55,10 +64,40 @@
   z-index: 10;
   transition: box-shadow 0.25s ease;
   line-height: 1;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .addBtn:hover {
   box-shadow:
     0 0 48px rgba(245, 166, 35, 0.65),
     0 4px 24px rgba(0, 0, 0, 0.5);
+}
+
+.addBtn:active {
+  transform: scale(0.93);
+}
+
+/* ── Mobile ── */
+@media (max-width: 480px) {
+  .zoomWrap {
+    bottom: 100px;
+    left: 16px;
+    gap: 4px;
+  }
+
+  .zBtn {
+    width: 44px;
+    height: 44px;
+    font-size: 20px;
+    border-radius: 12px;
+  }
+
+  .addBtn {
+    bottom: 24px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    font-size: 30px;
+  }
 }

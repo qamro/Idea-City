@@ -191,3 +191,35 @@
     font-size: 16px;
   }
 }
+
+/* ── Mobile extra ── */
+@media (max-width: 480px) {
+  .backdrop {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .modal {
+    border-radius: 20px 20px 0 0;
+    padding: 24px 18px 36px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .catGrid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+  }
+
+  .catBtn {
+    padding: 10px 4px;
+  }
+
+  .catIcon {
+    font-size: 18px;
+  }
+
+  .catName {
+    font-size: 8px;
+  }
+}
