@@ -1,7 +1,3 @@
-/**
- * Firestore database service
- * Handles all reads/writes for cities, buildings, districts, achievements
- */
 import {
   collection,
   doc,
@@ -16,26 +12,34 @@ import {
   orderBy,
   onSnapshot,
   serverTimestamp,
+  enableNetwork,
+  disableNetwork,
 } from 'firebase/firestore'
 import { db } from './firebase'
 
 // ── Collection refs ──────────────────────────
-const usersCol       = () => collection(db, 'users')
-const citiesCol      = () => collection(db, 'cities')
-const buildingsCol   = (cityId) => collection(db, 'cities', cityId, 'buildings')
-const districtsCol   = (cityId) => collection(db, 'cities', cityId, 'districts')
-const achievementsCol= (cityId) => collection(db, 'cities', cityId, 'achievements')
+const usersCol        = () => collection(db, 'users')
+const citiesCol       = () => collection(db, 'cities')
+const buildingsCol    = (cityId) => collection(db, 'cities', cityId, 'buildings')
+const districtsCol    = (cityId) => collection(db, 'cities', cityId, 'districts')
+const achievementsCol = (cityId) => collection(db, 'cities', cityId, 'achievements')
+
+// ── Force network on every call ──────────────
+async function ensureOnline() {
+  try { await enableNetwork(db) } catch (_) {}
+}
 
 // ── Users ────────────────────────────────────
 export async function ensureUser(user) {
-  const ref = doc(usersCol(), user.uid)
+  await ensureOnline()
+  const ref  = doc(usersCol(), user.uid)
   const snap = await getDoc(ref)
   if (!snap.exists()) {
     await setDoc(ref, {
-      uid:       user.uid,
-      name:      user.displayName || 'Founder',
-      email:     user.email || '',
-      photoURL:  user.photoURL || '',
+      uid:      user.uid,
+      name:     user.displayName || 'Founder',
+      email:    user.email || '',
+      photoURL: user.photoURL || '',
       createdAt: serverTimestamp(),
     })
   }
@@ -44,7 +48,8 @@ export async function ensureUser(user) {
 
 // ── Cities ───────────────────────────────────
 export async function getCityByOwner(uid) {
-  const q = query(citiesCol(), where('ownerId', '==', uid))
+  await ensureOnline()
+  const q    = query(citiesCol(), where('ownerId', '==', uid))
   const snap = await getDocs(q)
   if (snap.empty) return null
   const d = snap.docs[0]
@@ -52,6 +57,7 @@ export async function getCityByOwner(uid) {
 }
 
 export async function createCity(uid, cityName) {
+  await ensureOnline()
   const ref = await addDoc(citiesCol(), {
     ownerId:    uid,
     cityName,
@@ -63,6 +69,7 @@ export async function createCity(uid, cityName) {
 }
 
 export async function updateCity(cityId, data) {
+  await ensureOnline()
   await updateDoc(doc(citiesCol(), cityId), data)
 }
 
@@ -72,10 +79,13 @@ export function subscribeBuildings(cityId, callback) {
   return onSnapshot(q, (snap) => {
     const buildings = snap.docs.map((d) => ({ id: d.id, ...d.data() }))
     callback(buildings)
+  }, (err) => {
+    console.error('subscribeBuildings error:', err.message)
   })
 }
 
 export async function addBuilding(cityId, data) {
+  await ensureOnline()
   const ref = await addDoc(buildingsCol(cityId), {
     ...data,
     createdAt: serverTimestamp(),
@@ -85,6 +95,7 @@ export async function addBuilding(cityId, data) {
 }
 
 export async function updateBuilding(cityId, buildingId, data) {
+  await ensureOnline()
   await updateDoc(doc(buildingsCol(cityId), buildingId), {
     ...data,
     updatedAt: serverTimestamp(),
@@ -92,17 +103,20 @@ export async function updateBuilding(cityId, buildingId, data) {
 }
 
 export async function removeBuilding(cityId, buildingId) {
+  await ensureOnline()
   await deleteDoc(doc(buildingsCol(cityId), buildingId))
 }
 
 // ── Districts ────────────────────────────────
 export async function getDistricts(cityId) {
+  await ensureOnline()
   const snap = await getDocs(districtsCol(cityId))
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }))
 }
 
 export async function upsertDistrict(cityId, category, data) {
-  const q = query(districtsCol(cityId), where('category', '==', category))
+  await ensureOnline()
+  const q    = query(districtsCol(cityId), where('category', '==', category))
   const snap = await getDocs(q)
   if (snap.empty) {
     await addDoc(districtsCol(cityId), { category, ...data, createdAt: serverTimestamp() })
@@ -117,10 +131,13 @@ export function subscribeAchievements(cityId, callback) {
   return onSnapshot(q, (snap) => {
     const achievements = snap.docs.map((d) => ({ id: d.id, ...d.data() }))
     callback(achievements)
+  }, (err) => {
+    console.error('subscribeAchievements error:', err.message)
   })
 }
 
 export async function unlockAchievement(cityId, title, description) {
+  await ensureOnline()
   await addDoc(achievementsCol(cityId), {
     title,
     description,
