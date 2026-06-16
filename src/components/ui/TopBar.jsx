@@ -1,10 +1,10 @@
 import { motion } from 'framer-motion'
 import { useCity } from '../../context/CityContext'
 import { calcPopulation, fmtNum } from '../../utils/helpers'
-import { CATEGORIES } from '../../utils/constants'
+import ProfileMenu from './ProfileMenu'
 import styles from './TopBar.module.css'
 
-export default function TopBar({ dayMode, onToggleDay, onSignOut, userName }) {
+export default function TopBar({ dayMode, onToggleDay, onSignOut }) {
   const { city, buildings } = useCity()
 
   const pop       = fmtNum(calcPopulation(buildings))
@@ -47,12 +47,8 @@ export default function TopBar({ dayMode, onToggleDay, onSignOut, userName }) {
         </motion.div>
       </button>
 
-      {/* User avatar / sign out */}
-      {userName && (
-        <button className={styles.avatar} onClick={onSignOut} title="Sign out">
-          {userName.charAt(0).toUpperCase()}
-        </button>
-      )}
+      {/* Profile menu */}
+      <ProfileMenu onSignOut={onSignOut} />
     </motion.div>
   )
 }
