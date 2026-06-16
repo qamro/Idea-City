@@ -255,10 +255,10 @@ Developed by:
 
 **MIT** 
 
----
+
 
 <div align="center">
 
-**Build your civilization.**
+## Build your civilisation.
 
 </div>
