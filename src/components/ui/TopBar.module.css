@@ -15,7 +15,6 @@
   white-space: nowrap;
   z-index: 10;
   pointer-events: auto;
-  max-width: calc(100vw - 24px);
 }
 
 .cityName {
@@ -59,6 +58,13 @@
   color: var(--cream-60);
 }
 
+.rightGroup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
 .timeToggle {
   width: 52px;
   height: 26px;
@@ -69,7 +75,6 @@
   display: flex;
   align-items: center;
   padding: 2px 3px;
-  position: relative;
   transition: background 0.4s ease;
   flex-shrink: 0;
 }
@@ -91,61 +96,51 @@
   flex-shrink: 0;
 }
 
-/* ── Tablet ── */
-@media (max-width: 768px) {
-  .bar {
-    gap: 14px;
-    padding: 8px 16px;
-    top: 14px;
-  }
-
-  /* Hide districts stat on tablet */
-  .stat:nth-child(5),
-  .stat:nth-child(6) {
-    display: none;
-  }
-
-  /* Hide divider after hidden stats */
-  .divider:nth-child(6) {
-    display: none;
-  }
+.hideMobile {
+  /* visible on desktop */
+  display: flex;
 }
 
-/* ── Mobile ── */
-@media (max-width: 480px) {
+/* ══════════════════════════════
+   MOBILE (≤ 600px)
+══════════════════════════════ */
+@media (max-width: 600px) {
   .bar {
+    /* stretch edge to edge with margin */
     top: 10px;
-    gap: 10px;
-    padding: 7px 12px;
-    border-radius: 20px;
+    left: 10px;
+    right: 10px;
+    transform: none;
+    width: auto;
+    padding: 8px 14px;
+    border-radius: 14px;
+    gap: 0;
+
+    /* city name left, right group right, pop in middle */
+    justify-content: space-between;
   }
 
   .cityName {
-    font-size: 10px;
+    font-size: 11px;
     letter-spacing: 0.08em;
-    max-width: 80px;
+    max-width: 100px;
     overflow: hidden;
     text-overflow: ellipsis;
+    flex-shrink: 1;
   }
 
-  /* Show only population stat on mobile */
-  .stat:nth-child(3) {
-    display: flex;
-  }
-
-  .stat:nth-child(5),
-  .stat:nth-child(6),
-  .stat:nth-child(7) {
+  /* Hide all dividers on mobile */
+  .divider {
     display: none;
   }
 
-  .divider:not(:first-of-type) {
+  /* Hide districts + buildings on mobile */
+  .hideMobile {
     display: none;
   }
 
-  /* Hide all dividers except first */
-  .divider ~ .divider {
-    display: none;
+  .stat {
+    gap: 4px;
   }
 
   .val {
@@ -156,10 +151,15 @@
     font-size: 10px;
   }
 
-  /* Smaller day/night toggle on mobile */
+  .rightGroup {
+    gap: 8px;
+  }
+
+  /* Smaller toggle on mobile */
   .timeToggle {
-    width: 42px;
+    width: 40px;
     height: 22px;
+    padding: 2px;
   }
 
   .toggleBall {
