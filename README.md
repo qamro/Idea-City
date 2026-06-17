@@ -257,6 +257,6 @@ Developed by:
 
 <div align="center">
 
-## Build your civilisation.
+## Enjoy your city. Watch it grow. Add your ideas, skills, dreams and goals one by one. 🏙️✨.
 
 </div>
