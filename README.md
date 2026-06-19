@@ -158,9 +158,6 @@ cities/{cityId}
 
 
 
-Developed by:
-
-Developed by:
 
 
 
