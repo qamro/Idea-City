@@ -159,7 +159,7 @@ cities/{cityId}
 
 
 
-Developed by:
+
 
 
 
