@@ -154,6 +154,7 @@ cities/{cityId}
 
 ## 👨‍💻 Author
 
+Developed by:
 
 **Mohamed Qamar Eddine Bakhouche**
 
