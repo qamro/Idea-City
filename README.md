@@ -158,7 +158,7 @@ cities/{cityId}
 
 
 
-Developed by:
+
 
 
 
