@@ -36,6 +36,28 @@ export async function ensureUser(user) {
   return snap.data()
 }
 
+/** Save user profile fields (name, description, photoURL) */
+export async function saveUserProfile(uid, data) {
+  try {
+    await setDoc(doc(usersCol(), uid), {
+      ...data,
+      updatedAt: serverTimestamp(),
+    }, { merge: true })
+  } catch (e) {
+    console.error('saveUserProfile error:', e.message)
+  }
+}
+
+/** Subscribe to user profile changes in realtime */
+export function subscribeUserProfile(uid, callback) {
+  return onSnapshot(doc(usersCol(), uid), (snap) => {
+    if (snap.exists()) callback(snap.data())
+    else callback(null)
+  }, (err) => {
+    console.error('subscribeUserProfile error:', err.message)
+  })
+}
+
 export async function getCityByOwner(uid) {
   const q    = query(citiesCol(), where('ownerId', '==', uid))
   const snap = await getDocs(q)
