@@ -156,7 +156,6 @@ cities/{cityId}
 
 
 
-Developed by:
 
 
 
